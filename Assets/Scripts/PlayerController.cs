@@ -59,6 +59,8 @@ public class PlayerController : MonoBehaviour
 
             // kembalikan obstacle ke pool (non-aktifkan)
             other.gameObject.SetActive(false);
+
+            GameManager.instance.GameOver();
         }
     }
 }

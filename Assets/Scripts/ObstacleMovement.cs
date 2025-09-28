@@ -1,36 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ObstacleMovement : MonoBehaviour
 {
-    public float speed = 10f;
-    public float offscreenX = -15f; // jika melewati nilai ini, dikembalikan ke pool (SetActive(false))
-
-    private PlayerController playerController; // optional reference untuk cek gameOver
-
-    void OnEnable()
-    {
-        // ambil reference ke player (pakai tag agar lebih aman)
-        if (playerController == null)
-        {
-            GameObject p = GameObject.FindWithTag("Player");
-            if (p != null) playerController = p.GetComponent<PlayerController>();
-        }
-    }
+    [Header("Movement Settings")]
+    public float speed = 5f;        // kecepatan obstacle
+    public float despawnX = -15f;   // posisi X batas despawn
 
     void Update()
     {
-        // cek null dan gameOver
-        if (playerController != null && playerController.gameOver) return;
-
+        // Gerakkan obstacle ke kiri
         transform.Translate(Vector3.left * speed * Time.deltaTime);
 
-        // jika keluar layar, non-aktifkan (kembalikan ke pool)
-        if (transform.position.x < offscreenX)
+        // Jika sudah melewati batas, nonaktifkan agar kembali ke pool
+        if (transform.position.x < despawnX)
         {
             gameObject.SetActive(false);
         }
     }
 }
-

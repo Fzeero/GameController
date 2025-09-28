@@ -72,7 +72,6 @@ public class SpawnManager : MonoBehaviour
         obj.SetActive(true);
     }
 
-
     public void CleanPool()
     {
         for (int i = pool.Count - 1; i >= 0; i--)

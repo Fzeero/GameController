@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
     private Vector3 playerStartPos;
     private bool isGameOver = false;
 
+    [Header("UI")]
+    public GameObject gameOverPanel; // drag & drop panel UI di Inspector
+
     void Awake()
     {
         if (instance == null) instance = this;
@@ -25,6 +28,10 @@ public class GameManager : MonoBehaviour
         // simpan posisi awal player
         if (player != null)
             playerStartPos = player.transform.position;
+
+        // pastikan panel game over awalnya tidak aktif
+        if (gameOverPanel != null) 
+            gameOverPanel.SetActive(false);
     }
 
     void Update()
@@ -53,35 +60,43 @@ public class GameManager : MonoBehaviour
             o.enabled = false;
         }
 
-        // tampilkan info (optional, bisa pakai UI)
+        // tampilkan panel UI Game Over
+        if (gameOverPanel != null) 
+            gameOverPanel.SetActive(true);
+
         Debug.Log("Tekan R untuk restart");
     }
 
     public void RestartGame()
+{
+    Debug.Log("[GameManager] Restart game...");
+
+    // reset player
+    if (player != null)
     {
-        Debug.Log("[GameManager] Restart game...");
-
-        // reset player
-        if (player != null)
-        {
-            player.transform.position = playerStartPos;
-            player.gameOver = false;
-        }
-
-        // hapus/nonaktifkan semua obstacle
-        ObstacleMovement[] obstacles = FindObjectsOfType<ObstacleMovement>();
-        foreach (var o in obstacles)
-        {
-            o.gameObject.SetActive(false);
-            o.enabled = true; // aktifkan kembali movement untuk nanti
-        }
-
-        // aktifkan spawner lagi
-        if (spawner != null)
-        {
-            spawner.enabled = true;
-        }
-
-        isGameOver = false;
+        player.transform.position = playerStartPos;
+        player.gameOver = false;
     }
+
+    // nonaktifkan semua obstacle, jangan Destroy
+    ObstacleMovement[] obstacles = FindObjectsOfType<ObstacleMovement>();
+    foreach (var o in obstacles)
+    {
+        o.gameObject.SetActive(false);  // cukup disable
+        o.enabled = true;               // aktifkan script lagi untuk nanti
+    }
+
+    // aktifkan spawner lagi
+    if (spawner != null)
+    {
+        spawner.enabled = true;
+    }
+
+    // sembunyikan panel UI Game Over
+    if (gameOverPanel != null)
+        gameOverPanel.SetActive(false);
+
+    isGameOver = false;
+}
+
 }

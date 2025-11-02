@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     private Camera mainCam;
 
     // --- Mode kontrol (Keyboard / Mouse) ---
-    public enum ControlMode { Keyboard, Mouse }
+    public enum ControlMode { Keyboard, Mouse, SteeringWheel }
     private ControlMode controlMode = ControlMode.Keyboard;
 
     void Start()
@@ -30,10 +30,15 @@ public class PlayerController : MonoBehaviour
             HandleKeyboardInput();
         else if (controlMode == ControlMode.Mouse)
             HandleMouseInput();
+        else if (controlMode == ControlMode.SteeringWheel)
+            HandleSteeringInput();
+
 
         // gerakkan player menuju lane yang dituju
         Vector3 targetPos = new Vector3(transform.position.x, lanes[currentLane], transform.position.z);
         transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * moveSpeed);
+
+        
     }
 
     // --- Fungsi untuk memilih mode kontrol dari ControllerSelector ---
@@ -85,6 +90,27 @@ public class PlayerController : MonoBehaviour
             currentLane = nearestLane;
         }
     }
+
+    void HandleSteeringInput()
+{
+    // baca input dari sumbu horizontal setir
+    float steer = Input.GetAxis("Horizontal"); // atau bisa "Steer" jika sudah diset di Input Manager
+
+    // contoh: jika setir ke atas → naik lane, ke bawah → turun lane
+    if (steer > 0.5f && currentLane > 0)
+    {
+        currentLane--;
+    }
+    else if (steer < -0.5f && currentLane < lanes.Length - 1)
+    {
+        currentLane++;
+    }
+
+    // optional: pedal gas bisa digunakan untuk kecepatan
+    float accel = Input.GetAxis("Accelerator"); // jika di-setup di Input Manager
+    moveSpeed = Mathf.Lerp(5f, 15f, accel);
+}
+
 
     // --- Snap player ke lane terdekat di awal permainan ---
     void SnapToNearestLane()
